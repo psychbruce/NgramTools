@@ -1,0 +1,23 @@
+Package: NgramTools
+Title: Efficient R Functions for Google Books Ngram Data Analysis
+Version: 0.1.0
+Date: 2022-08-30
+Authors@R:
+    c(person(given = "Han-Wu-Shuang",
+             family = "Bao",
+             role = c("aut", "cre"),
+             email = "baohws@foxmail.com"))
+Author: Han-Wu-Shuang Bao [aut, cre]
+Maintainer: Han-Wu-Shuang Bao <baohws@foxmail.com>
+Description:
+  RData files and R functions for word frequency analysis
+  with the Google Books Ngram database.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+LazyDataCompression: xz
+URL: https://github.com/psychbruce/NgramTools
+BugReports: https://github.com/psychbruce/NgramTools/issues
+Depends: R (>= 4.0.0)
+Imports: bruceR, dplyr, stringr, data.table
+RoxygenNote: 7.2.1
