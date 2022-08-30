@@ -26,4 +26,14 @@ ngram_count(ngram.v3.chi_TAG,
             years=1949:2019,
             pattern="^独特_|^独一无二_")
 
+years = 1949:2019
+pattern = "^独特_|^独一无二_"
+data = data.table(
+  year = years,
+  total.words = total.v3[year \%in\% years]$words.chi,
+  freq = ngram_count(ngram.v3.chi_TAG, years, pattern=pattern)
+)
+data[, prop := freq / total.words]
+data
+
 }

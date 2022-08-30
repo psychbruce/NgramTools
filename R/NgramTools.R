@@ -6,7 +6,14 @@
 #' @importFrom dplyr %>% left_join
 #' @importFrom bruceR %^% Print formatN
 .onAttach = function(libname, pkgname) {
-  #
+  ## Loaded Package
+  pkgs = c("dplyr", "stringr", "data.table")
+
+  suppressMessages({
+    suppressWarnings({
+      loaded = sapply(pkgs, require, character.only=TRUE)
+    })
+  })
 }
 
 
@@ -69,6 +76,7 @@ NULL
 get_ngram_data = function(data, word) {
   i = which(data$ngram==word)
   di = data[[i, "data"]]
+  # di = data[[ngram==word, "data"]]
   d = do.call(rbind, str_split(str_split(di, "\\t", simplify=TRUE), ","))
   d = as.data.table(d)
   names(d) = c("year", "match_count", "volume_count")
@@ -98,6 +106,16 @@ ngram_keywords = function(data, pattern) {
 #'             years=1949:2019,
 #'             pattern="^独特_|^独一无二_")
 #'
+#' years = 1949:2019
+#' pattern = "^独特_|^独一无二_"
+#' data = data.table(
+#'   year = years,
+#'   total.words = total.v3[year %in% years]$words.chi,
+#'   freq = ngram_count(ngram.v3.chi_TAG, years, pattern=pattern)
+#' )
+#' data[, prop := freq / total.words]
+#' data
+#'
 #' @export
 ngram_count = function(data, years,
                        words=NULL, pattern=NULL) {
@@ -107,20 +125,21 @@ ngram_count = function(data, years,
   if(length(words)==0) {
     counts = rep(0, length(years))
   } else {
+    data.subset = data[ngram %in% words]
     data.counts = do.call(cbind, lapply(words, function(word) {
       left_join(data.table(year=years),
-                get_ngram_data(data, word),
+                get_ngram_data(data.subset, word),
                 by="year")$match_count
     }))
     counts = rowSums(data.counts, na.rm=TRUE)
     counts.each.word = colSums(data.counts, na.rm=TRUE)
-    words.info = words %^% " (" %^% counts.each.word %^% ")"
+    words.info = paste0(words, " (", counts.each.word, ")")
     Print("<<blue Keywords matched:>>
           <<green {paste(words.info, collapse=', ')}>>
           <<white (total count = {formatN(sum(counts))})>>
           \n
          ")
   }
-  names(counts) = "|" %^% years %^% "|"
+  names(counts) = paste0("|", years, "|")
   return(counts)
 }
